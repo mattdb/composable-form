@@ -1,19 +1,4 @@
-module Data.User exposing
-    ( FavoriteLanguage(..)
-    , Name
-    , Password
-    , User
-    , ValidEmail
-    , favoriteLanguageToString
-    , favoriteLanguages
-    , nameToString
-    , parseFavoriteLanguage
-    , parseName
-    , parsePassword
-    , passwordLength
-    , signUp
-    , validateEmailAddress
-    )
+module Data.User exposing (FavoriteLanguage(..), Name, Password, User, ValidEmail, favoriteLanguageToString, favoriteLanguages, nameToString, parseFavoriteLanguage, parseFavoriteNumber, parseName, parsePassword, passwordLength, signUp, validateEmailAddress)
 
 import Data.EmailAddress as EmailAddress exposing (EmailAddress)
 import Dict
@@ -126,6 +111,27 @@ favoriteLanguageToString language =
 
         Other ->
             "other"
+
+
+
+-- FAVORITE NUMBER
+
+
+type FavoriteNumber
+    = FavoriteNumber Float
+
+
+parseFavoriteNumber : String -> Result String FavoriteNumber
+parseFavoriteNumber number =
+    number
+        |> String.toFloat
+        |> Maybe.map FavoriteNumber
+        |> Result.fromMaybe "Your favorite number must be an actual number!"
+
+
+favoriteNumberToString : FavoriteNumber -> String
+favoriteNumberToString (FavoriteNumber number) =
+    String.fromFloat number
 
 
 

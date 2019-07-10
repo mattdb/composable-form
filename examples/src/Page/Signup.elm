@@ -20,6 +20,7 @@ type alias Values =
     , password : String
     , repeatPassword : String
     , favoriteLanguage : String
+    , favoriteNumber : String
     , acceptTerms : Bool
     , errors : Errors
     }
@@ -46,6 +47,7 @@ init =
     , password = ""
     , repeatPassword = ""
     , favoriteLanguage = ""
+    , favoriteNumber = ""
     , acceptTerms = False
     , errors = { email = Nothing }
     }
@@ -227,6 +229,21 @@ form =
                     }
                 }
 
+        favoriteNumberField =
+            Form.numberField
+                { parser = User.parseFavoriteNumber
+                , value = .favoriteNumber
+                , update = \value values -> { values | favoriteNumber = value }
+                , error = always Nothing
+                , attributes =
+                    { label = "What is your favorite number?"
+                    , placeholder = "Favorite Number"
+                    , step = Nothing
+                    , min = Nothing
+                    , max = Nothing
+                    }
+                }
+
         acceptTermsCheckbox =
             Form.checkboxField
                 { parser =
@@ -255,7 +272,7 @@ form =
                     "Other"
     in
     Form.succeed
-        (\email name password favoriteLanguage _ ->
+        (\email name password favoriteLanguage favoriteNumber _ ->
             SignUp email name password favoriteLanguage
         )
         |> Form.append emailField
@@ -267,6 +284,7 @@ form =
                 |> Form.group
             )
         |> Form.append favoriteLanguageField
+        |> Form.append favoriteNumberField
         |> Form.append acceptTermsCheckbox
 
 
