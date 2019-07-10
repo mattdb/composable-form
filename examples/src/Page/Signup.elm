@@ -5,6 +5,8 @@ import Data.User as User exposing (User)
 import Form exposing (Form)
 import Form.View
 import Html exposing (Html)
+import Html.Attributes as Attributes
+import Html.Events as Events
 import Task
 import View
 
@@ -23,6 +25,7 @@ type alias Values =
     , favoriteNumber : String
     , acceptTerms : Bool
     , errors : Errors
+    , extraNumber : String
     }
 
 
@@ -38,6 +41,7 @@ type Msg
     = FormChanged (Form.View.Model Values)
     | SignUp EmailAddress User.Name User.Password User.FavoriteLanguage
     | SignupAttempted (Result String User)
+    | ExtraNumberChanged String
 
 
 init : Model
@@ -50,6 +54,7 @@ init =
     , favoriteNumber = ""
     , acceptTerms = False
     , errors = { email = Nothing }
+    , extraNumber = ""
     }
         |> Form.View.idle
         |> FillingForm
@@ -72,6 +77,24 @@ update msg model =
                     ( FillingForm { formModel | state = Form.View.Loading }
                     , User.signUp email name password favoriteLanguage
                         |> Task.attempt SignupAttempted
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        ExtraNumberChanged newNumber ->
+            -- Hackily store in formModel for cheap-n-easy proof of concept
+            case model of
+                FillingForm formModel ->
+                    let
+                        formValues =
+                            formModel.values
+
+                        newValues =
+                            { formValues | extraNumber = newNumber }
+                    in
+                    ( FillingForm { formModel | values = newValues }
+                    , Cmd.none
                     )
 
                 _ ->
@@ -123,6 +146,13 @@ view formView model =
                     }
                     form
                     formModel
+                , Html.input
+                    [ Events.onInput ExtraNumberChanged
+                    , Attributes.type_ "number"
+                    , Attributes.step "any"
+                    , Attributes.value formModel.values.extraNumber
+                    ]
+                    []
                 ]
 
         SignedUp user ->
